@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ParticleLiveBackground</string>
+    <string name="wallpaper_description">Live wallpaper based on Particle.js</string>
+    <string name="title_activity_set_wallpaper">SetWallpaperActivity</string>
+</resources>
