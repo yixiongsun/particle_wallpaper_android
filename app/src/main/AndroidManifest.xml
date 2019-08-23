@@ -21,7 +21,7 @@
         </activity>
 
         <service
-            android:name=".ParticleWallpaperService"
+            android:name=".RainbowWallpaper"
             android:enabled="true"
             android:label="Wallpaper Example "
             android:permission="android.permission.BIND_WALLPAPER">
