@@ -10,28 +10,28 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class RainbowWallpaper extends ParticleWallpaperService{
-    
+public class ParticleWallpaper extends ParticleWallpaperService {
 
-
+    // Override onCreateEngine to return a custom ParticleEngine object
     @Override
     public Engine onCreateEngine() {
-        return new BokehEngine();
+        return new ParticleEngine();
     }
 
-    class BokehEngine extends AnimationEngine {
+    // ParticleEngine inherits from ParticleWallpaperService.Engine
+    class ParticleEngine extends AnimationEngine {
+
         int offsetX;
         int offsetY;
         int height;
         int width;
         int visibleWidth;
 
-        Set<BokehRainbowCircle> circles = new HashSet<BokehRainbowCircle>();
+        // HashSet of Particles
+        Set<Particles> particles = new HashSet<Particles>();
 
-        int iterationCount = 0;
 
-        Paint paint = new Paint();
-
+        // Override onCreate and enable touch events
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
@@ -40,25 +40,34 @@ public class RainbowWallpaper extends ParticleWallpaperService{
             setTouchEventsEnabled(true);
         }
 
+        // Overrides onSurfaceChanged and sets local variables to the updated dimensions
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format,
                                      int width, int height) {
 
+            // height
             this.height = height;
+
+            // width
             if (this.isPreview()) {
                 this.width = width;
             } else {
                 this.width = 2 * width;
             }
+
+            // visibleWidth
             this.visibleWidth = width;
 
-            for (int i = 0; i < 20; i++) {
+            // Reinitialize particles
+            /*for (int i = 0; i < 20; i++) {
                 this.createRandomCircle();
-            }
+            }*/
 
             super.onSurfaceChanged(holder, format, width, height);
         }
 
+
+        // Overrides onOffsetsChanged and sets local variables to updated offsets
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset,
                                      float xOffsetStep, float yOffsetStep, int xPixelOffset,
@@ -71,15 +80,19 @@ public class RainbowWallpaper extends ParticleWallpaperService{
                     xPixelOffset, yPixelOffset);
         }
 
+        // Overrides onCommand and does particle action on tap
         @Override
         public Bundle onCommand(String action, int x, int y, int z,
                                 Bundle extras, boolean resultRequested) {
+
+            // Tap action
             if ("android.wallpaper.tap".equals(action)) {
-                createCircle(x - this.offsetX, y - this.offsetY);
+                //createCircle(x - this.offsetX, y - this.offsetY);
             }
             return super.onCommand(action, x, y, z, extras, resultRequested);
         }
 
+        // Overrides drawFrame and locks the canvas and draws the updates to the canvas
         @Override
         protected void drawFrame() {
             SurfaceHolder holder = getSurfaceHolder();
@@ -96,46 +109,14 @@ public class RainbowWallpaper extends ParticleWallpaperService{
             }
         }
 
+        // Draws the particles on the canvas
         void draw(Canvas c) {
             c.save();
             c.drawColor(0xff000000);
 
-            synchronized (circles) {
-                for (BokehRainbowCircle circle : circles) {
-                    // Do drawing here
+            synchronized (particles) {
+                for (Particles particle : particles) {
 
-                    if (circle.alpha == 0)
-                        continue;
-
-                    // intersects with the screen?
-                    float minX = circle.x - circle.radius;
-                    if (minX > (-this.offsetX + this.visibleWidth)) {
-                        continue;
-                    }
-                    float maxX = circle.x + circle.radius;
-                    if (maxX < -this.offsetX) {
-                        continue;
-                    }
-
-                    paint.setAntiAlias(true);
-
-                    // paint the fill
-                    paint.setColor(Color.argb(circle.alpha, Color
-                                    .red(circle.color), Color.green(circle.color),
-                            Color.blue(circle.color)));
-                    paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                    c.drawCircle(circle.x + this.offsetX, circle.y
-                            + this.offsetY, circle.radius, paint);
-
-                    // paint the contour
-                    paint.setColor(Color.argb(circle.alpha, 63 + 3 * Color
-                            .red(circle.color) / 4, 63 + 3 * Color
-                            .green(circle.color) / 4, 63 + 3 * Color
-                            .blue(circle.color) / 4));
-                    paint.setStyle(Paint.Style.STROKE);
-                    paint.setStrokeWidth(3.0f);
-                    c.drawCircle(circle.x + this.offsetX, circle.y
-                            + this.offsetY, circle.radius, paint);
                 }
             }
 
@@ -144,26 +125,31 @@ public class RainbowWallpaper extends ParticleWallpaperService{
 
         @Override
         protected void iteration() {
-            synchronized (circles) {
-                for (Iterator<BokehRainbowCircle> it = circles.iterator(); it
+
+            // Iteration logic
+
+            /*
+            synchronized (particles) {
+                for (Iterator<Particles> it = particles.iterator(); it
                         .hasNext();) {
-                    BokehRainbowCircle circle = it.next();
-                    circle.tick();
-                    if (circle.isDone())
+                    Particles particle = it.next();
+                    particle.tick();
+                    if (particle.isDone())
                         it.remove();
                 }
                 iterationCount++;
                 if (isPreview() || iterationCount % 2 == 0)
                     createRandomCircle();
-            }
+            }*/
 
             super.iteration();
         }
 
-        void createRandomCircle() {
+        // Create random particle
+        void createRandomParticle() {
             int x = (int) (width * Math.random());
             int y = (int) (height * Math.random());
-            createCircle(x, y);
+            createParticle(x, y);
         }
 
         int getColor(float yFraction) {
@@ -171,7 +157,7 @@ public class RainbowWallpaper extends ParticleWallpaperService{
                     1.0f });
         }
 
-        void createCircle(int x, int y) {
+        void createParticle(int x, int y) {
             float radius = (float) (40 + 20 * Math.random());
 
             float yFraction = (float) y / (float) height;
@@ -183,12 +169,15 @@ public class RainbowWallpaper extends ParticleWallpaperService{
             int color = getColor(yFraction);
 
             int steps = 40 + (int) (20 * Math.random());
-            BokehRainbowCircle circle = new BokehRainbowCircle(x, y, radius,
-                    color, steps);
-            synchronized (this.circles) {
-                this.circles.add(circle);
+            //BokehRainbowCircle particle = new BokehRainbowCircle(x, y, radius,
+            //        color, steps);
+            synchronized (this.particles) {
+                //this.particles.add(particle);
             }
         }
 
+
     }
+
+
 }
