@@ -24,6 +24,8 @@ public class Particles {
         this.opacityValue = opacityValue;
     }
 
+    //TODO: Implement the DRAW function from line 400 from particles.js
+
     public int getRadius() {
         return radius;
     }
