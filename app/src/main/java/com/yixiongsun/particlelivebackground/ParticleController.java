@@ -20,6 +20,8 @@ public class ParticleController {
         this.particles = particles;
     }
 
+
+    // TODO: Random calculation of particle position and velocity
     // Function to create new particles
     public void createParticles(int number) {
         for (int i = 0; i < number; i++) {
@@ -63,6 +65,7 @@ public class ParticleController {
             // TODO: particle.draw(c);
         }
 
+        c.restore();
     }
 
     // Remove all particles from array
