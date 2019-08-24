@@ -2,20 +2,22 @@ package com.yixiongsun.particlelivebackground;
 
 public class Particles {
     // Class that defines a single particle like colour, position, and others
-    private int radius;
-    private int size;
-    private int velocitySize;
-    private boolean size_status;
+    int radius;
+    int size;
+    int velocitySize;
+    boolean sizeStatus;
     private int sizeSpeed;
-    private int positionX;
-    private int positionY;
+    double positionX;
+    double positionY;
+    double velocityX;
+    double velocityY;
     private String colour;
-    private int opacityValue;
-    private boolean opacityAnimEnable;
-    private int velocityOpacity;
-    private boolean opacityStatus;
+    double opacityValue;
+    boolean opacityAnimEnable;
+    int velocityOpacity;
+    boolean opacityStatus;
 
-    public Particles(int positionX, int positionY, String colour, int opacityValue) {
+    public Particles(String colour, double opacityValue, double positionX, double positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.colour = colour;
@@ -46,14 +48,6 @@ public class Particles {
         this.velocitySize = velocitySize;
     }
 
-    public boolean isSize_status() {
-        return size_status;
-    }
-
-    public void setSize_status(boolean size_status) {
-        this.size_status = size_status;
-    }
-
     public int getSizeSpeed() {
         return sizeSpeed;
     }
@@ -62,19 +56,19 @@ public class Particles {
         this.sizeSpeed = sizeSpeed;
     }
 
-    public int getPositionX() {
+    public double getPositionX() {
         return positionX;
     }
 
-    public void setPositionX(int positionX) {
+    public void setPositionX(double positionX) {
         this.positionX = positionX;
     }
 
-    public int getPositionY() {
+    public double getPositionY() {
         return positionY;
     }
 
-    public void setPositionY(int positionY) {
+    public void setPositionY(double positionY) {
         this.positionY = positionY;
     }
 
@@ -86,11 +80,11 @@ public class Particles {
         this.colour = colour;
     }
 
-    public int getOpacityValue() {
+    public double getOpacityValue() {
         return opacityValue;
     }
 
-    public void setOpacityValue(int opacityValue) {
+    public void setOpacityValue(double opacityValue) {
         this.opacityValue = opacityValue;
     }
 
@@ -116,5 +110,21 @@ public class Particles {
 
     public void setOpactityStatus(boolean opactityStatus) {
         this.opacityStatus = opactityStatus;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public void setVelocityX(double velocityX) {
+        this.velocityX = velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
+    }
+
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
     }
 }
