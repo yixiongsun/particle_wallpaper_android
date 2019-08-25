@@ -1,5 +1,9 @@
 package com.yixiongsun.particlelivebackground;
 
 public enum ParticleShape {
-    CIRCLE
+    CIRCLE,
+    EDGE,
+    TRIANGLE,
+    POLYGON,
+    STAR
 }

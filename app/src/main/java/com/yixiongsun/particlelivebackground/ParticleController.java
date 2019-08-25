@@ -27,9 +27,9 @@ public class ParticleController {
 
 
     // Function to create new particles
-    public void createParticles(int number, float width, float height) {
+    public void createParticles(float width, float height) {
         synchronized (particles) {
-            for (int i = 0; i < number; i++) {
+            for (int i = 0; i < particleSettings.numberOfParticles; i++) {
                 // Create the particle and add it to the Set
                 // Dummy variables for colours and opacity
                 String[] colours = {"#ffffff"};
@@ -172,7 +172,7 @@ public class ParticleController {
         // 3. Draw each particle
         synchronized (particles) {
             for (Particle particle: particles) {
-                particle.draw(canvas);
+                particle.draw(canvas, particleSettings);
             }
         }
 

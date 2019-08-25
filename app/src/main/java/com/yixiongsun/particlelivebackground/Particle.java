@@ -1,24 +1,29 @@
 package com.yixiongsun.particlelivebackground;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 public class Particle {
     // Class that defines a single particle like colour, position, and others
     float radius;
-    int size;
     float velocitySize;
     boolean sizeStatus;
-    private int sizeSpeed;
     float positionX;
     float positionY;
     float velocityX, velocityY, initialVelocityX, initialVelocityY;
 
     private String colour;
     float opacityValue;
-    boolean opacityAnimEnable;
     float velocityOpacity;
     boolean opacityStatus;
     ParticleShape shape;
+
+    boolean bubbleRadius;
+    float bubbleRadiusValue;
+    boolean opacityRadius;
+    float opacityRadiusValue;
+
 
     public Particle(ParticleSettings particleSettings, float width, float height) {
 
@@ -56,7 +61,7 @@ public class Particle {
         this.opacityValue = (float) ((particleSettings.randomOpacity ? Math.random() : 1) * particleSettings.opacityValue);
         if(particleSettings.opacityAnimate){
             this.opacityStatus = false;
-            this.velocityOpacity = particleSettings.opactiyAnimateSpeed / 100;
+            this.velocityOpacity = particleSettings.opacityAnimateSpeed / 100;
             if(!particleSettings.opacityAnimateSync){
                 this.velocityOpacity *= Math.random();
             }
@@ -124,7 +129,104 @@ public class Particle {
     }
 
     //TODO: Implement the DRAW function from line 400 from particles.js
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, ParticleSettings particleSettings) {
+
+
+        float radius, opacity;
+        // Check for bubbling particles
+        if(this.bubbleRadius){
+            radius = this.bubbleRadiusValue;
+        }else{
+            radius = this.radius;
+        }
+
+        if(this.opacityRadius){
+            opacity = this.opacityRadiusValue;
+        }else{
+            opacity = this.opacityValue;
+        }
+
+        Color.parseColor(this.colour);
+
+        // Paint
+        Paint p1 = new Paint(), p2 = new Paint();
+        p1.setColor(Color.parseColor(this.colour));
+
+        boolean drawStroke = false;
+        if(particleSettings.strokeWith > 0){
+            drawStroke = true;
+            p2.setColor(Color.parseColor(particleSettings.strokeColour));
+            p2.setStrokeWidth(particleSettings.strokeWith);
+            p2.setStyle(Paint.Style.STROKE);
+        } else {
+            p1.setStyle(Paint.Style.FILL);
+
+        }
+
+        switch(this.shape){
+            case CIRCLE:
+                canvas.drawCircle(this.positionX, this.positionY, this.radius, p1);
+                if (drawStroke) canvas.drawCircle(this.positionX, this.positionY, this.radius, p2);
+                break;
+
+                // TODO: Implement other shapes
+                /*
+            case 'edge':
+                pJS.canvas.ctx.rect(p.x-radius, p.y-radius, radius*2, radius*2);
+                break;
+
+            case 'triangle':
+                pJS.fn.vendors.drawShape(pJS.canvas.ctx, p.x-radius, p.y+radius / 1.66, radius*2, 3, 2);
+                break;
+
+            case 'polygon':
+                pJS.fn.vendors.drawShape(
+                        pJS.canvas.ctx,
+                        p.x - radius / (pJS.particles.shape.polygon.nb_sides/3.5), // startX
+                        p.y - radius / (2.66/3.5), // startY
+                        radius*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
+                        pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
+                        1 // sideCountDenominator
+                );
+                break;
+
+            case 'star':
+                pJS.fn.vendors.drawShape(
+                        pJS.canvas.ctx,
+                        p.x - radius*2 / (pJS.particles.shape.polygon.nb_sides/4), // startX
+                        p.y - radius / (2*2.66/3.5), // startY
+                        radius*2*2.66 / (pJS.particles.shape.polygon.nb_sides/3), // sideLength
+                        pJS.particles.shape.polygon.nb_sides, // sideCountNumerator
+                        2 // sideCountDenominator
+                );
+                break;
+
+            case 'image':
+
+                function draw(){
+                pJS.canvas.ctx.drawImage(
+                        img_obj,
+                        p.x-radius,
+                        p.y-radius,
+                        radius*2,
+                        radius*2 / p.img.ratio
+                );
+            }
+
+            if(pJS.tmp.img_type == 'svg'){
+                var img_obj = p.img.obj;
+            }else{
+                var img_obj = pJS.tmp.img_obj;
+            }
+
+            if(img_obj){
+                draw();
+            }
+
+            break;*/
+
+        }
+
 
     }
 

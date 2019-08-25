@@ -3,7 +3,7 @@ package com.yixiongsun.particlelivebackground;
 // Particle settings
 public class ParticleSettings {
 
-    int numberOfParticles = 400;
+    int numberOfParticles = 100;
      boolean densityEnabled = true;
      int density = 800;
 
@@ -17,11 +17,11 @@ public class ParticleSettings {
      float opacityValue = 1;
      boolean randomOpacity = false;
      boolean opacityAnimate = false;
-     float opactiyAnimateSpeed = 2;
+     float opacityAnimateSpeed = 2;
      float opacityMin = 0;
      boolean opacityAnimateSync = false;
 
-     float size = 20;
+     float size = 5;
      boolean randomSize = false;
      boolean sizeAnimate = false;
      float sizeAnimateSpeed = 20;
@@ -29,13 +29,13 @@ public class ParticleSettings {
      boolean sizeAnimateSync = false;
 
      boolean lineLinked = true;
-     float lineDistance = 100;
+     float lineDistance = 150;
      String lineColour = "#ffffff";
      float lineOpacity = 1;
      float lineWidth = 1;
 
      boolean move = true;
-     float moveSpeed = 2;
+     float moveSpeed = 10;
      ParticleDirection moveDirection = ParticleDirection.NONE;
      boolean randomMove = false;
      boolean moveStraight = false;

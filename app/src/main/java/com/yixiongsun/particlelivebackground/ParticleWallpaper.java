@@ -1,14 +1,9 @@
 package com.yixiongsun.particlelivebackground;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 public class ParticleWallpaper extends ParticleWallpaperService {
 
@@ -27,11 +22,8 @@ public class ParticleWallpaper extends ParticleWallpaperService {
         int width;
         int visibleWidth;
 
+        // Particle Controller
         private ParticleController particleController = new ParticleController();
-
-        // HashSet of Particle
-        Set<Particle> particles = new HashSet<Particle>();
-
 
         // Override onCreate and enable touch events
         @Override
@@ -61,9 +53,7 @@ public class ParticleWallpaper extends ParticleWallpaperService {
             this.visibleWidth = width;
 
             // Reinitialize particles
-            /*for (int i = 0; i < 20; i++) {
-                this.createRandomCircle();
-            }*/
+            initParticle(this.width, this.height);
 
             super.onSurfaceChanged(holder, format, width, height);
         }
@@ -103,7 +93,7 @@ public class ParticleWallpaper extends ParticleWallpaperService {
             try {
                 c = holder.lockCanvas();
                 if (c != null) {
-                    draw(c);
+                    particleController.drawParticles(c);
                 }
             } finally {
                 if (c != null)
@@ -112,33 +102,15 @@ public class ParticleWallpaper extends ParticleWallpaperService {
         }
 
         void initParticle(float width, float height) {
-            particleController.createParticles(20, width, height);
+            particleController.createParticles(width, height);
         }
 
-
-        // Draws the particles on the canvas
-        void draw(Canvas c) {
-
-        }
 
         @Override
         protected void iteration() {
 
             super.iteration();
         }
-
-        // Create random particle
-        void createRandomParticle() {
-            int x = (int) (width * Math.random());
-            int y = (int) (height * Math.random());
-        }
-
-        int getColor(float yFraction) {
-            return Color.HSVToColor(new float[] { 360.0f * yFraction, 1.0f,
-                    1.0f });
-        }
-
-
 
     }
 
