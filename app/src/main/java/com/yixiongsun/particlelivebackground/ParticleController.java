@@ -193,14 +193,14 @@ public class ParticleController {
 
         // draw a line between p1 and p2 if the distance between them is under the config distance
         if(dist <= particleSettings.lineDistance){
-            float lineOpacity = particleSettings.lineOpacity - (dist / (1/particleSettings.lineOpacity)) / particleSettings.lineDistance;
+            float lineOpacity = particleSettings.lineOpacity - (dist / (1 / particleSettings.lineOpacity)) / particleSettings.lineDistance;
 
             if(lineOpacity > 0){
 
                 // style
                 Paint paint = new Paint();
                 paint.setStyle(Paint.Style.STROKE);
-                paint.setColor(Color.parseColor(particleSettings.lineColour));
+                paint.setColor(colourInt(particleSettings.lineColour, lineOpacity));
                 paint.setStrokeWidth(particleSettings.lineWidth);
 
                 // path
@@ -248,6 +248,15 @@ public class ParticleController {
             p2.velocityX = -1 * p2.velocityX;
             p2.velocityY = -1 * p2.velocityY;
         }
+    }
+
+    public static int colourInt(String colour, float opacity) {
+        int colourInt = Color.parseColor(colour);
+        int R = (colourInt >> 16) & 0xff;
+        int G = (colourInt >>  8) & 0xff;
+        int B = (colourInt      ) & 0xff;
+        int A = (int) (opacity * 100);
+        return Color.argb(A, R, G, B);
     }
 
 

@@ -146,16 +146,17 @@ public class Particle {
             opacity = this.opacityValue;
         }
 
-        Color.parseColor(this.colour);
+
+
 
         // Paint
         Paint p1 = new Paint(), p2 = new Paint();
-        p1.setColor(Color.parseColor(this.colour));
+        p1.setColor(ParticleController.colourInt(this.colour, opacity));
 
         boolean drawStroke = false;
         if(particleSettings.strokeWith > 0){
             drawStroke = true;
-            p2.setColor(Color.parseColor(particleSettings.strokeColour));
+            p2.setColor(ParticleController.colourInt(particleSettings.strokeColour, opacity));
             p2.setStrokeWidth(particleSettings.strokeWith);
             p2.setStyle(Paint.Style.STROKE);
         } else {
@@ -165,8 +166,8 @@ public class Particle {
 
         switch(this.shape){
             case CIRCLE:
-                canvas.drawCircle(this.positionX, this.positionY, this.radius, p1);
-                if (drawStroke) canvas.drawCircle(this.positionX, this.positionY, this.radius, p2);
+                canvas.drawCircle(this.positionX, this.positionY, radius, p1);
+                if (drawStroke) canvas.drawCircle(this.positionX, this.positionY, radius, p2);
                 break;
 
                 // TODO: Implement other shapes
