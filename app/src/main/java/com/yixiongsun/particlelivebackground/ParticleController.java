@@ -5,39 +5,22 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class ParticleController {
 
-    private float moveSpeed;
-    private boolean animateOpacity;
-    private float opacityValue;
-    private float opacityMin;
-    private float sizeValue;
-    private float sizeMin;
-    private String moveOutMode;
-    private boolean lineLinked;
-    private float lineLinkedDistance;
-    private float lineLinkedOpacity;
-    private String lineLinkedColour;
-    private float lineLinkedWidth;
-    private boolean attractEnabled;
-    private float attractRotateX;
-    private float attractRotateY;
-
-    private boolean moveBounce;
 
     // Local variables
-    ArrayList<Particles> particles;
+    private ArrayList<Particle> particles;
+    private ParticleSettings particleSettings = new ParticleSettings();
 
 
     // Default constructor
     public ParticleController() {
-        this.particles = new ArrayList<Particles>();
+        this.particles = new ArrayList<Particle>();
     }
 
     // Constructor from particles
-    public ParticleController(ArrayList<Particles> particles) {
+    public ParticleController(ArrayList<Particle> particles) {
         this.particles = particles;
     }
 
@@ -45,14 +28,16 @@ public class ParticleController {
 
     // Function to create new particles
     public void createParticles(int number, float width, float height) {
-        for (int i = 0; i < number; i++) {
-            // Create the particle and add it to the Set
-            // Dummy variables for colours and opacity
-            String[] colours = {"#ffffff"};
-            float opacity = 1;
+        synchronized (particles) {
+            for (int i = 0; i < number; i++) {
+                // Create the particle and add it to the Set
+                // Dummy variables for colours and opacity
+                String[] colours = {"#ffffff"};
+                float opacity = 1;
 
-            particles.add(new Particles("#ffffff", opacity, width, height));
+                particles.add(new Particle(particleSettings, width, height));
 
+            }
         }
     }
 
@@ -63,20 +48,20 @@ public class ParticleController {
         // Loop through each particle
         for (int i = 0; i < particles.size(); i++) {
 
-            Particles particle = this.particles.get(i);
+            Particle particle = this.particles.get(i);
 
             // 1. Move the particle
-            float ms = moveSpeed/2;
+            float ms = particleSettings.moveSpeed/2;
             particle.positionX += particle.velocityX * ms;
             particle.positionY += particle.velocityY * ms;
 
             // 2. Change the opacity
-            if (animateOpacity) {
+            if (particleSettings.opacityAnimate) {
                 if (particle.opacityStatus == true) {
-                    if (particle.opacityValue >= this.opacityValue) particle.opacityStatus = false;
+                    if (particle.opacityValue >= particleSettings.opacityValue) particle.opacityStatus = false;
                     particle.opacityValue += particle.velocityOpacity;
                 } else {
-                    if (particle.opacityValue <= this.opacityMin) particle.opacityStatus = true;
+                    if (particle.opacityValue <= particleSettings.opacityMin) particle.opacityStatus = true;
                     particle.opacityValue -= particle.velocityOpacity;
                 }
                 if (particle.opacityValue < 0) particle.opacityValue = 0;
@@ -85,10 +70,10 @@ public class ParticleController {
 
             // 3. Change the size
             if (particle.sizeStatus == true) {
-                if(particle.radius >= this.sizeValue) particle.sizeStatus = false;
+                if(particle.radius >= particleSettings.size) particle.sizeStatus = false;
                 particle.radius += particle.velocitySize;
             } else {
-                if(particle.radius <= this.sizeMin) particle.sizeStatus = true;
+                if(particle.radius <= particleSettings.sizeMin) particle.sizeStatus = true;
                 particle.radius -= particle.velocitySize;
             }
             if(particle.radius < 0) particle.radius = 0;
@@ -96,7 +81,7 @@ public class ParticleController {
 
             // 4. Change the location if it is out of the canvas
             float xLeft, xRight, yTop, yBottom;
-            if(this.moveOutMode.equals("bounce")){
+            if(particleSettings.moveOutMode.equals("bounce")){
                 xLeft = particle.radius;
                 xRight = width;
                 yTop = particle.radius;
@@ -127,7 +112,7 @@ public class ParticleController {
             }
 
             // Velocity changes
-            switch(moveOutMode){
+            switch(particleSettings.moveOutMode){
                 case "bounce":
                     if (particle.positionX + particle.radius > width) particle.velocityX = -1 * particle.velocityX;
                     else if (particle.positionX - particle.radius < 0) particle.velocityX = -1 * particle.velocityX;
@@ -151,22 +136,22 @@ public class ParticleController {
             }*/
 
             // 6. Interaction between particles
-            if(lineLinked || attractEnabled){
+            if(particleSettings.lineLinked || particleSettings.attract){
                 for(int j = i + 1; j < this.particles.size(); j++){
-                    Particles particle2 = this.particles.get(j);
+                    Particle particle2 = this.particles.get(j);
 
                     /* link particles */
-                    if(lineLinked){
+                    if(particleSettings.lineLinked){
                         linkParticles(canvas, particle, particle2);
                     }
 
                     /* attract particles */
-                    if(attractEnabled){
+                    if(particleSettings.attract){
                         attractParticles(particle, particle2);
                     }
 
                     /* bounce particles */
-                    if(moveBounce){
+                    if(particleSettings.bounce){
                         bounceParticles(particle, particle2);
                     }
                 }
@@ -185,35 +170,38 @@ public class ParticleController {
         updateParticles(canvas);
 
         // 3. Draw each particle
-        for (Particles particle: particles) {
-            particle.draw(canvas);
+        synchronized (particles) {
+            for (Particle particle: particles) {
+                particle.draw(canvas);
+            }
         }
+
 
         canvas.restore();
     }
 
     // Remove all particles from array
     public void removeParticles() {
-        this.particles = new ArrayList<Particles>();
+        this.particles = new ArrayList<Particle>();
     }
 
     // Function to link particles
-    private void linkParticles(Canvas canvas, Particles p1, Particles p2) {
+    private void linkParticles(Canvas canvas, Particle p1, Particle p2) {
         float dx = p1.positionX - p2.positionX;
         float dy = p1.positionY - p2.positionY;
         float dist = (float) Math.sqrt(dx*dx + dy*dy);
 
         // draw a line between p1 and p2 if the distance between them is under the config distance
-        if(dist <= lineLinkedDistance){
-            float lineOpacity = lineLinkedOpacity - (dist / (1/lineLinkedOpacity)) / lineLinkedDistance;
+        if(dist <= particleSettings.lineDistance){
+            float lineOpacity = particleSettings.lineOpacity - (dist / (1/particleSettings.lineOpacity)) / particleSettings.lineDistance;
 
             if(lineOpacity > 0){
 
                 // style
                 Paint paint = new Paint();
                 paint.setStyle(Paint.Style.STROKE);
-                paint.setColor(Color.parseColor(lineLinkedColour));
-                paint.setStrokeWidth(lineLinkedWidth);
+                paint.setColor(Color.parseColor(particleSettings.lineColour));
+                paint.setStrokeWidth(particleSettings.lineWidth);
 
                 // path
                 canvas.drawLine(p1.positionX, p1.positionY, p2.positionX, p2.positionY, paint);
@@ -224,16 +212,16 @@ public class ParticleController {
     }
 
     // Function to attract particles
-    private void attractParticles(Particles p1, Particles p2) {
+    private void attractParticles(Particle p1, Particle p2) {
 
         float dx = p1.positionX - p2.positionX;
         float dy = p1.positionY - p2.positionY;
         float dist = (float) Math.sqrt(dx*dx + dy*dy);
 
-        if(dist <= lineLinkedDistance){
+        if(dist <= particleSettings.lineDistance){
 
-            float ax = dx/(attractRotateX*1000);
-            float ay = dy/(attractRotateY*1000);
+            float ax = dx/(particleSettings.attractRotateX*1000);
+            float ay = dy/(particleSettings.attractRotateY*1000);
 
             p1.velocityX -= ax;
             p1.velocityY -= ay;
@@ -246,7 +234,7 @@ public class ParticleController {
 
 
     // Function to bounce particles
-    private void bounceParticles(Particles p1, Particles p2) {
+    private void bounceParticles(Particle p1, Particle p2) {
 
         float dx = p1.positionX - p2.positionX;
         float dy = p1.positionY - p2.positionY;

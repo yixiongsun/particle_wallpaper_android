@@ -27,8 +27,10 @@ public class ParticleWallpaper extends ParticleWallpaperService {
         int width;
         int visibleWidth;
 
-        // HashSet of Particles
-        Set<Particles> particles = new HashSet<Particles>();
+        private ParticleController particleController = new ParticleController();
+
+        // HashSet of Particle
+        Set<Particle> particles = new HashSet<Particle>();
 
 
         // Override onCreate and enable touch events
@@ -109,38 +111,18 @@ public class ParticleWallpaper extends ParticleWallpaperService {
             }
         }
 
+        void initParticle(float width, float height) {
+            particleController.createParticles(20, width, height);
+        }
+
+
         // Draws the particles on the canvas
         void draw(Canvas c) {
-            c.save();
-            c.drawColor(0xff000000);
 
-            synchronized (particles) {
-                for (Particles particle : particles) {
-
-                }
-            }
-
-            c.restore();
         }
 
         @Override
         protected void iteration() {
-
-            // Iteration logic
-
-            /*
-            synchronized (particles) {
-                for (Iterator<Particles> it = particles.iterator(); it
-                        .hasNext();) {
-                    Particles particle = it.next();
-                    particle.tick();
-                    if (particle.isDone())
-                        it.remove();
-                }
-                iterationCount++;
-                if (isPreview() || iterationCount % 2 == 0)
-                    createRandomCircle();
-            }*/
 
             super.iteration();
         }
@@ -149,7 +131,6 @@ public class ParticleWallpaper extends ParticleWallpaperService {
         void createRandomParticle() {
             int x = (int) (width * Math.random());
             int y = (int) (height * Math.random());
-            createParticle(x, y);
         }
 
         int getColor(float yFraction) {
@@ -157,24 +138,6 @@ public class ParticleWallpaper extends ParticleWallpaperService {
                     1.0f });
         }
 
-        void createParticle(int x, int y) {
-            float radius = (float) (40 + 20 * Math.random());
-
-            float yFraction = (float) y / (float) height;
-            yFraction = yFraction + 0.05f - (float) (0.1f * (Math.random()));
-            if (yFraction < 0.0f)
-                yFraction += 1.0f;
-            if (yFraction > 1.0f)
-                yFraction -= 1.0f;
-            int color = getColor(yFraction);
-
-            int steps = 40 + (int) (20 * Math.random());
-            //BokehRainbowCircle particle = new BokehRainbowCircle(x, y, radius,
-            //        color, steps);
-            synchronized (this.particles) {
-                //this.particles.add(particle);
-            }
-        }
 
 
     }
