@@ -29,16 +29,10 @@ public class ParticleController {
     // Function to create new particles
     public void createParticles(float width, float height) {
         synchronized (particles) {
-            for (int i = 0; i < particleSettings.numberOfParticles; i++) {
-                // Create the particle and add it to the Set
-                // Dummy variables for colours and opacity
-                String[] colours = {"#ffffff"};
-                float opacity = 1;
-
-                particles.add(new Particle(particleSettings, width, height));
-
-            }
+            pushParticles(particleSettings.numberOfParticles, width, height);
+            particleAutoDensity(width, height);
         }
+
     }
 
     // Function to update each particle, modifies the particles in the Set
@@ -250,6 +244,7 @@ public class ParticleController {
         }
     }
 
+    // Static function to get a colour int from a hex string and opacity float
     public static int colourInt(String colour, float opacity) {
         int colourInt = Color.parseColor(colour);
         int R = (colourInt >> 16) & 0xff;
@@ -259,6 +254,46 @@ public class ParticleController {
         return Color.argb(A, R, G, B);
     }
 
+    // Function to push number of particles to particles array
+    private void pushParticles(int number, float width, float height) {
+       // synchronized (particles) {
+            for (int i = 0; i < number; i++) {
+                // Create the particle and add it to the Set
+
+                particles.add(new Particle(particleSettings, width, height));
+
+            }
+       // }
+    }
+
+    // Function to remove number of particles from particles array
+    private void removeParticles(int number) {
+        for (int i = 0; i < number; i++) {
+            particles.remove(0);
+        }
+    }
+
+
+    private void particleAutoDensity(float width, float height) {
+        if(particleSettings.densityEnabled){
+
+            // calculate area
+            float area = width * height / 1000;
+            /*
+            if(pJS.tmp.retina){
+                area = area/(pJS.canvas.pxratio*2);
+            }*/
+
+            // calc number of particles based on density area
+            int numberOfParticles = (int) (area * particleSettings.numberOfParticles / particleSettings.density);
+
+            // add or remove X particles
+            int missingParticles = this.particles.size() - numberOfParticles;
+            if(missingParticles < 0) pushParticles(Math.abs(missingParticles), width, height);
+            else removeParticles(missingParticles);
+
+        }
+    }
 
 
 

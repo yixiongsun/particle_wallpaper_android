@@ -5,7 +5,7 @@ public class ParticleSettings {
 
     int numberOfParticles = 100;
      boolean densityEnabled = true;
-     int density = 800;
+     int density = 3600;
 
      String[] colour = {"#ffffff"};
 
@@ -15,6 +15,7 @@ public class ParticleSettings {
      int numberOfPolygonSides = 5;
 
      float opacityValue = 1;
+
      boolean randomOpacity = false;
      boolean opacityAnimate = false;
      float opacityAnimateSpeed = 2;
@@ -22,20 +23,19 @@ public class ParticleSettings {
      boolean opacityAnimateSync = false;
 
      float size = 5;
-     boolean randomSize = false;
+     boolean randomSize = true;
      boolean sizeAnimate = false;
      float sizeAnimateSpeed = 20;
      float sizeMin = 0;
      boolean sizeAnimateSync = false;
-
      boolean lineLinked = true;
-     float lineDistance = 150;
+     float lineDistance = 200;
      String lineColour = "#ffffff";
      float lineOpacity = 1;
      float lineWidth = 1;
 
      boolean move = true;
-     float moveSpeed = 10;
+     float moveSpeed = 20;
      ParticleDirection moveDirection = ParticleDirection.NONE;
      boolean randomMove = false;
      boolean moveStraight = false;
