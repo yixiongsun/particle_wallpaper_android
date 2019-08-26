@@ -43,8 +43,8 @@ public class ParticleController {
         for (int i = 0; i < particles.size(); i++) {
 
             Particle particle = this.particles.get(i);
-
             // 1. Move the particle
+
             float ms = particleSettings.moveSpeed/2;
             particle.positionX += particle.velocityX * ms;
             particle.positionY += particle.velocityY * ms;
@@ -164,11 +164,11 @@ public class ParticleController {
         updateParticles(canvas);
 
         // 3. Draw each particle
-        synchronized (particles) {
+       // synchronized (particles) {
             for (Particle particle: particles) {
                 particle.draw(canvas, particleSettings);
             }
-        }
+        //}
 
 
         canvas.restore();

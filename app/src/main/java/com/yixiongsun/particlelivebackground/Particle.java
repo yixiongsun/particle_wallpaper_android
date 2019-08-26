@@ -117,7 +117,7 @@ public class Particle {
             }
         } else{
             this.velocityX = (float) (ux + Math.random() - 0.5);
-            this.velocityX = (float) (uy + Math.random() - 0.5);
+            this.velocityY = (float) (uy + Math.random() - 0.5);
         }
 
         this.initialVelocityX = this.velocityX;

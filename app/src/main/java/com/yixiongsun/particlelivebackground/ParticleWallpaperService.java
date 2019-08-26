@@ -66,7 +66,7 @@ public abstract class ParticleWallpaperService extends WallpaperService {
             // Reschedule the next redraw in 40ms
             mHandler.removeCallbacks(mIteration);
             if (mVisible) {
-                mHandler.postDelayed(mIteration, 1000 / 25);
+                mHandler.postDelayed(mIteration, 1000 / 90);
             }
         }
     }
