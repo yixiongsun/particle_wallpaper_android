@@ -16,10 +16,9 @@ public class ParticleController {
     // Variables to track events
     private float clickPosX = 0;
     private float clickPosY = 0;
-    private boolean bubbleClicking = false;
-    private boolean repulseClicking = false;
-    private int repulseCount = 0;
-    private boolean repulseFinish = true;
+    private boolean clicking = false;
+    private boolean clickingFinish = true;
+    private int eventCount = 0;
 
 
     // Default constructor
@@ -138,6 +137,11 @@ public class ParticleController {
                 pJS.fn.modes.bubbleParticle(p);
             }
             */
+
+            // Attract event
+            if (particleSettings.onClickEvent == ParticleEvent.ATTRACT) {
+                attractParticle(particle, canvas);
+            }
 
             // Repulse event
             if (particleSettings.onClickEvent == ParticleEvent.REPUSLE) {
@@ -278,7 +282,6 @@ public class ParticleController {
             particles.add(new Particle(particleSettings, width, height));
 
         }
-        // }
     }
 
     // Function to remove number of particles from particles array
@@ -320,19 +323,35 @@ public class ParticleController {
 
             switch (particleSettings.onClickEvent) {
                 case BUBBLE:
-                    this.bubbleClicking = true;
+                    this.clicking = true;
                     break;
                 case REPUSLE:
-                    this.repulseClicking = true;
-                    this.repulseCount = 0;
-                    this.repulseFinish = false;
+                    this.clicking = true;
+                    this.eventCount = 0;
+                    this.clickingFinish = false;
 
                     // Create a timer to execute after duration
                     new java.util.Timer().schedule(
                             new java.util.TimerTask() {
                                 @Override
                                 public void run() {
-                                    repulseClicking = false;
+                                    clicking = false;
+
+                                }
+                            }, (int) (particleSettings.repulseDuration * 1000));
+
+                    break;
+                case ATTRACT:
+                    this.clicking = true;
+                    this.eventCount = 0;
+                    this.clickingFinish = false;
+
+                    // Create a timer to execute after duration
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    clicking = false;
 
                                 }
                             }, (int) (particleSettings.repulseDuration * 1000));
@@ -349,50 +368,79 @@ public class ParticleController {
     }
 
 
+    private void attractParticle(Particle particle, Canvas canvas) {
+        // Attract
+        if (particleSettings.onClickEnable && particleSettings.onClickEvent == ParticleEvent.ATTRACT) {
+
+            if (!this.clickingFinish) {
+                this.eventCount++;
+
+                // Stop repulse after count has reached number of particles
+                if (this.eventCount == particles.size()) {
+                    this.clickingFinish = true;
+                }
+            }
+
+
+            // If repulse is clicking, ie Timer hasn't finished
+            if (this.clicking) {
+
+                double attractRadius = Math.pow(particleSettings.repulseDistance / 6, 3);
+
+                double dx = this.clickPosX - particle.positionX, dy = this.clickPosY - particle.positionY, d = dx * dx + dy * dy;
+
+                double force = d / attractRadius * 10;
+
+                // default
+                if (d <= attractRadius) {
+
+                    // TODO: Reverse the velocity such that velocity is 0 when dy and dx = 0
+                    double f = Math.atan2(dy, dx);
+                    particle.velocityX = (float) (force * Math.cos(f));
+                    particle.velocityY = (float) (force * Math.sin(f));
+
+                    if (particleSettings.moveOutMode.equals("bounce")) {
+                        double x = particle.positionX + particle.velocityX;
+                        double y = particle.positionY + particle.velocityY;
+
+                        if (x + particle.radius > canvas.getWidth())
+                            particle.velocityX = -1 * particle.velocityX;
+                        else if (x - particle.radius < 0)
+                            particle.velocityX = -1 * particle.velocityX;
+                        if (y + particle.radius > canvas.getHeight())
+                            particle.velocityY = -1 * particle.velocityY;
+                        else if (y - particle.radius < 0)
+                            particle.velocityY = -1 * particle.velocityY;
+                    }
+                }
+
+                // Repulse is not clicking
+            } else {
+                particle.velocityX = particle.initialVelocityX;
+                particle.velocityY = particle.initialVelocityY;
+            }
+        }
+    }
+
+
     // Particle Events
     private void repulseParticle(Particle particle, Canvas canvas) {
 
-        /*
-        if(pJS.interactivity.events.onhover.enable && isInArray('repulse', pJS.interactivity.events.onhover.mode) && pJS.interactivity.status == 'mousemove') {
-
-            var dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
-                    dy_mouse = p.y - pJS.interactivity.mouse.pos_y,
-                    dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
-
-            var normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse},
-            repulseRadius = pJS.interactivity.modes.repulse.distance,
-                    velocity = 100,
-                    repulseFactor = clamp((1/repulseRadius)*(-1*Math.pow(dist_mouse/repulseRadius,2)+1)*repulseRadius*velocity, 0, 50);
-
-            var pos = {
-                    x: p.x + normVec.x * repulseFactor,
-                    y: p.y + normVec.y * repulseFactor
-      }
-
-            if(pJS.particles.move.out_mode == 'bounce'){
-                if(pos.x - p.radius > 0 && pos.x + p.radius < pJS.canvas.w) p.x = pos.x;
-                if(pos.y - p.radius > 0 && pos.y + p.radius < pJS.canvas.h) p.y = pos.y;
-            }else{
-                p.x = pos.x;
-                p.y = pos.y;
-            }
-
-        }*/
-
+        // Repulse
         if (particleSettings.onClickEnable && particleSettings.onClickEvent == ParticleEvent.REPUSLE) {
 
             // If repulse hasn't finished yet
-            if (!this.repulseFinish) {
-                this.repulseCount++;
+            if (!this.clickingFinish) {
+                this.eventCount++;
 
                 // Stop repulse after count has reached number of particles
-                if (this.repulseCount == particles.size()) {
-                    this.repulseFinish = true;
+                if (this.eventCount == particles.size()) {
+                    this.clickingFinish = true;
                 }
             }
 
             // If repulse is clicking, ie Timer hasn't finished
-            if (this.repulseClicking) {
+            if (this.clicking) {
 
                 double repulseRadius = Math.pow(particleSettings.repulseDistance / 6, 3);
 
@@ -402,6 +450,7 @@ public class ParticleController {
 
                 // default
                 if (d <= repulseRadius) {
+                    // TODO: ADD a cap for the velocity of the particle
                     double f = Math.atan2(dy, dx);
                     particle.velocityX = (float) (force * Math.cos(f));
                     particle.velocityY = (float) (force * Math.sin(f));

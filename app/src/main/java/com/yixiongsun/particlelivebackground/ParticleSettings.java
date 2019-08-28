@@ -50,7 +50,7 @@ public class ParticleSettings {
     float repulseDuration = 0.4f;
     float repulseDistance = 400;
     boolean onClickEnable = true;
-    ParticleEvent onClickEvent = ParticleEvent.REPUSLE;
+    ParticleEvent onClickEvent = ParticleEvent.ATTRACT;
 
 
     public ParticleSettings() {
