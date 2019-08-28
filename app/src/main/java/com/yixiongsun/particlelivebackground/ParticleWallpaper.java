@@ -2,6 +2,7 @@ package com.yixiongsun.particlelivebackground;
 
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 
@@ -73,16 +74,30 @@ public class ParticleWallpaper extends ParticleWallpaperService {
         }
 
         // Overrides onCommand and does particle action on tap
-        @Override
+        /*@Override
         public Bundle onCommand(String action, int x, int y, int z,
                                 Bundle extras, boolean resultRequested) {
 
             // Tap action
             if ("android.wallpaper.tap".equals(action)) {
-                //createCircle(x - this.offsetX, y - this.offsetY);
+                particleController.onClick(x, y);
             }
             return super.onCommand(action, x, y, z, extras, resultRequested);
+        }*/
+
+        @Override
+        public void onTouchEvent (MotionEvent event) {
+
+            // Touch event
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                particleController.onClick(event.getX(), event.getY());
+
+
+            }
+
+            super.onTouchEvent(event);
         }
+
 
         // Overrides drawFrame and locks the canvas and draws the updates to the canvas
         @Override

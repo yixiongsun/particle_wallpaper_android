@@ -1,5 +1,6 @@
 package com.yixiongsun.particlelivebackground;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.view.SurfaceHolder;
